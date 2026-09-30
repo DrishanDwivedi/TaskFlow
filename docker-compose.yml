@@ -1,0 +1,41 @@
+services:
+
+  frontend:
+    image: taskflow-frontend:latest
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  backend:
+    image: taskflow-backend:latest
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: taskflow
+      DB_PASSWORD: taskflow123
+      DB_NAME: taskflow
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: taskflow
+      POSTGRES_PASSWORD: taskflow123
+      POSTGRES_DB: taskflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskflow -d taskflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
