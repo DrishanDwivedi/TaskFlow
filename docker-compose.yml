@@ -1,14 +1,14 @@
 services:
 
   frontend:
-    image: DrishanDwivedi/taskflow-frontend:latest
+    image: drishandwivedi/taskflow-frontend:latest
     ports:
       - "3000:80"
     depends_on:
       - backend
 
   backend:
-    image: DrishanDwivedi/taskflow-backend:latest
+    image: drishandwivedi/taskflow-backend:latest
     ports:
       - "5000:5000"
     environment:
