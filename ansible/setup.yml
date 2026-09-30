@@ -10,21 +10,61 @@
         update_cache: yes
         cache_valid_time: 3000
 
+    - name: Install prerequisites
+      apt:
+        name:
+          - ca-certificates
+          - curl
+          - git
+        state: present
+
+    - name: Create keyrings directory
+      file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+
+    - name: Add Docker GPG key
+      get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0644'
+
+    - name: Add Docker repository
+      deb822_repository:
+        name: docker
+        types: deb
+        uris: https://download.docker.com/linux/ubuntu
+        suites: "{{ ansible_distribution_release }}"
+        components:
+          - stable
+        architectures:
+          - amd64
+        signed_by: /etc/apt/keyrings/docker.asc
+
+    - name: Update APT after adding Docker repository
+      apt:
+        update_cache: yes
+
     - name: Install required packages
       apt:
         name:
-        - docker.io
-        - docker-compose-plugin
-        - git
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+          - git
         state: present
-    
+
     - name: Start Docker service
       service:
         name: docker
         state: started
         enabled: yes
+
     - name: Add remote user to docker group
-      user: 
+      user:
         name: "{{ ansible_user }}"
         groups: docker
         append: yes

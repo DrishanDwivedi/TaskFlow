@@ -50,4 +50,7 @@ resource "aws_instance" "my_instance" {
         volume_size = 8
         volume_type = "gp3"
     }
+    tags = {
+        Name = "Taskflow-Server"
+    }
 }
